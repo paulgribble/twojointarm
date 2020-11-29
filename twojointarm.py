@@ -25,6 +25,7 @@ A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, Q, t, aparams)
 
 # make some plots
 import matplotlib.pyplot as plt
+%matplotlib # assumes iPython shell
 
 fig = plt.figure()
 ax = fig.add_subplot(2,2,1)
