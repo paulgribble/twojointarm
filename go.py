@@ -87,7 +87,7 @@ f2ax2.set_ylabel('Y (m)')
 f2.tight_layout()
 
 
-# re-do forward simulations and randomly amplify or diminish joint torques
+# re-do forward simulations and randomly (gaussian) amplify or diminish joint torques
 # within a given range, and replot. In particular example hand endpoint
 # distribution
 
@@ -96,8 +96,8 @@ n_perts = 200
 for i in range(n_perts):
 	print("perturbation {0} of {1}".format(i+1,n_perts), end="\r")
 	QQ = np.copy(Q)
-	QQ[:,0] = QQ[:,0] * np.random.uniform(0.85, 1.15)
-	QQ[:,1] = QQ[:,1] * np.random.uniform(0.85, 1.15)
+	QQ[:,0] = QQ[:,0] * (0.05*np.random.randn()+1.0) # mean 1.0, sd 0.05
+	QQ[:,1] = QQ[:,1] * (0.05*np.random.randn()+1.0)
 	A0, Ad0 = A[0,:], Ad[0,:] # starting joint angles and velocities
 	A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, QQ, t, aparams)
 	f1ax1.plot(t,A_sim[:,0]*180/np.pi,'g-')
