@@ -37,8 +37,8 @@ def joints_to_hand(A, aparams):
 		E = np.array([l1 * np.cos(A[0]), l1 * np.sin(A[0])])
 		H = E + np.array([l2 * np.cos(A[0]+A[1]), l2 * np.sin(A[0]+A[1])])
 	else:
-		E = np.stack(([l1 * np.cos(A[:,0]), l1 * np.sin(A[:,0])]), axis=1)
-		H = E + np.stack(([l2 * np.cos(A[:,0]+A[:,1]), l2 * np.sin(A[:,0]+A[:,1])]), axis=1)
+		E = np.stack(([l1 * np.cos(A[:,0]), l1 * np.sin(A[:,0])]), axis=-1)
+		H = E + np.stack(([l2 * np.cos(A[:,0]+A[:,1]), l2 * np.sin(A[:,0]+A[:,1])]), axis=-1)
 	return (H,E)
 
 def hand_to_joints(H, aparams):
