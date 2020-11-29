@@ -8,9 +8,10 @@ H1,E1 = joints_to_hand(A1, aparams)
 H2 = H1 + np.array([0, 0.15])        # 15 cm movement distance
 mt = 0.400                           # movement time (sec)
 sr = 1000                            # sample rate (Hz)
+npts = np.int(mt*sr)+1               # number of time points
 
 # get a minimum-jerk desired hand trajectory
-t,H,Hd,Hdd = minjerk(H1,H2,mt,sr)
+t,H,Hd,Hdd = minjerk(H1,H2,mt,npts)
 
 # get corresponding desired joint angles velocities and accelerations
 A,Ad,Add = hand_to_joints((H,Hd,Hdd),aparams)

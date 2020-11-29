@@ -7,18 +7,17 @@ aparams = {
 	'i': np.array([0.025, 0.075]),    # moment of inertia (kg*m*m)
 }
 
-def minjerk(H1,H2,t,sr):
+def minjerk(H1,H2,t,n):
 	# Given hand initial position H1=(x1,y1), final position H2=(x2,y2) and movement duration t,
-	# and the sampling rate sr (Hz),
+	# and the number of points n,
 	# Calculates the hand path H over time T that satisfies minimum-jerk.
 	# Also returns derivatives Hd and Hdd. From the paper:
 	#   Flash T. & Hogan N. (1985) "The coordination of arm movements: an experimentally confirmed
 	#   mathematical model" Journal of Neuroscience 5(7): 1688-1703.
-	n = int(t*sr)
-	T = np.arange(0,t+t/n,t/n)
-	H = np.zeros((n+1,2))
-	Hd = np.zeros((n+1,2))
-	Hdd = np.zeros((n+1,2))
+	T = np.linspace(0,t,n)
+	H = np.zeros((n,2))
+	Hd = np.zeros((n,2))
+	Hdd = np.zeros((n,2))
 	t3,t4,t5 = t**3, t**4, t**5
 	T2,T3,T4 = T**2, T**3, T**4
 	Tt3,Tt4,Tt5 = (T/t)**3, (T/t)**4, (T/t)**5
