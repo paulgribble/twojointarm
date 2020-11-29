@@ -49,7 +49,6 @@ def hand_to_joints(H, aparams):
 		A = np.zeros(2)
 		A[1] = np.arccos((H[0]**2 + H[1]**2 - l1**2 - l2**2) / (2*l1*l2))
 		A[0] = np.arctan2(H[1],H[0]) - np.arctan2(l2*np.sin(A[1]),l1+(l2*np.cos(A[1])))
-		return A
 	elif ndim == 2:  # time-varying s,e joint angles (nx2)
 		n = np.shape(H)[0]
 		A = np.zeros((n,2))
