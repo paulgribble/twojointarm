@@ -25,7 +25,6 @@ A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, Q, t, aparams)
 
 # make some plots
 import matplotlib.pyplot as plt
-%matplotlib
 
 f0 = plt.figure()
 ax = f0.add_subplot(2,2,1)
@@ -97,8 +96,8 @@ n_perts = 200
 for i in range(n_perts):
 	print("perturbation {0} of {1}".format(i+1,n_perts), end="\r")
 	QQ = np.copy(Q)
-	QQ[:,0] = QQ[:,0] * np.random.uniform(0.90, 1.10)
-	QQ[:,1] = QQ[:,1] * np.random.uniform(0.90, 1.10)
+	QQ[:,0] = QQ[:,0] * np.random.uniform(0.85, 1.15)
+	QQ[:,1] = QQ[:,1] * np.random.uniform(0.85, 1.15)
 	A0, Ad0 = A[0,:], Ad[0,:] # starting joint angles and velocities
 	A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, QQ, t, aparams)
 	f1ax1.plot(t,A_sim[:,0]*180/np.pi,'g-')
