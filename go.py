@@ -7,7 +7,7 @@ A1 = np.array([55,90]) * np.pi/180   # 55,90 degrees shoudler,elbow
 H1,E1 = joints_to_hand(A1, aparams)
 H2 = H1 + np.array([0, 0.15])        # 15 cm movement distance
 mt = 0.400                           # movement time (sec)
-sr = 1000                            # sample rate (Hz)
+sr = 100                             # sample rate (Hz)
 npts = np.int(mt*sr)+1               # number of time points
 
 # get a minimum-jerk desired hand trajectory
@@ -27,26 +27,26 @@ A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, Q, t, aparams)
 import matplotlib.pyplot as plt
 %matplotlib
 
-fig = plt.figure()
-ax = fig.add_subplot(2,2,1)
+f0 = plt.figure()
+ax = f0.add_subplot(2,2,1)
 lines = ax.plot(t,A*180/np.pi)
 lines2= ax.plot(t,A_sim*180/np.pi)
 ax.set_xlabel('TIME (sec)')
 ax.set_ylabel('JOINT ANGLES (deg)')
-ax = fig.add_subplot(2,2,2)
+ax = f0.add_subplot(2,2,2)
 lines = ax.plot(t,Ad*180/np.pi)
 ax.set_xlabel('TIME (sec)')
 ax.set_ylabel('JOINT VELOCITIES (deg/s)')
-ax = fig.add_subplot(2,2,3)
+ax = f0.add_subplot(2,2,3)
 lines = ax.plot(t,Add*180/np.pi)
 ax.set_xlabel('TIME (sec)')
 ax.set_ylabel('JOINT ACCELERATIONS (deg/s)')
-ax = fig.add_subplot(2,2,4)
+ax = f0.add_subplot(2,2,4)
 lines = ax.plot(t,Q)
 ax.set_xlabel('TIME (sec)')
 ax.set_ylabel('JOINT TORQUES (Nm)')
-fig.tight_layout()
-
+f0.tight_layout()
+f0.savefig("fig0.png", dpi=150)
 
 
 # ============================================================================
@@ -88,12 +88,14 @@ f2ax2.set_ylabel('Y (m)')
 f2.tight_layout()
 
 
-# re-simulate forward simulation by amplifying or diminishing joint torques
-# within a given range, and replot
+# re-do forward simulations and randomly amplify or diminish joint torques
+# within a given range, and replot. In particular example hand endpoint
+# distribution
 
-n_perts = 100
+n_perts = 200
 
 for i in range(n_perts):
+	print("perturbation {0} of {1}".format(i+1,n_perts), end="\r")
 	QQ = np.copy(Q)
 	QQ[:,0] = QQ[:,0] * np.random.uniform(0.90, 1.10)
 	QQ[:,1] = QQ[:,1] * np.random.uniform(0.90, 1.10)
@@ -113,4 +115,6 @@ for i in range(n_perts):
 f2ax2.plot(H[-1,0],H[-1,1],'rs')
 f2ax1.axis('equal')
 f2ax2.axis('equal')
+f1.savefig("fig1.png", dpi=150)
+f2.savefig("fig2.png", dpi=150)
 
