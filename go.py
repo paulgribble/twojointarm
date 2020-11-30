@@ -1,12 +1,56 @@
 import numpy as np
+
+# PREP========================================================================
+# load up arm parameters aparams and some helper functions
 from twojointarm_funs import *
 
-# ============================================================================
+# get ready to plot stuff
+import matplotlib.pyplot as plt
+
+# too see the figures on the screen, if running in an iPython shell,
+# execute the command %matplotlib
+
+# KINEMATICS==================================================================
+# Add noise to joint angles and examine distribution of hand positions
+
+A1 = np.array([55,90]) * np.pi/180   # 55,90 degrees shoudler,elbow
+H1,_ = joints_to_hand(A1, aparams)
+H2 = H1 + np.array([0, 0.15])        # 15 cm movement distance
+A2 = hand_to_joints(H2, aparams)
+n_perts = 500
+A = np.zeros((n_perts, 2))
+H = np.zeros((n_perts, 2))
+r = 1.0 * np.pi / 180 # random perts: gaussian with 1 degree sd
+for i in range(n_perts):
+	A[i,:] = A2 + np.random.randn(2) * r
+	H[i,:],_ = joints_to_hand(A[i,:], aparams)
+
+# make a plot
+f = plt.figure()
+a1 = f.add_subplot(1,2,1)
+a1.plot(A[:,0]*180/np.pi, A[:,1]*180/np.pi, 'b.')
+a1.plot(A2[0]*180/np.pi, A2[1]*180/np.pi, 'rs')
+a1.set_xlabel('SHOULDER ANGLE (deg)')
+a1.set_ylabel('ELBOW ANGLE (deg)')
+a1.axis('equal')
+a1.grid('on')
+a2 = f.add_subplot(1,2,2)
+a2.plot(H[:,0]*1000, H[:,1]*1000, 'b.')
+a2.plot(H2[0]*1000, H2[1]*1000, 'rs')
+a2.set_xlabel('HAND X (mm)')
+a2.set_ylabel('HAND Y (mm)')
+a2.axis('equal')
+a2.grid('on')
+f.tight_layout()
+f.savefig("kin_1.png", dpi=150)
+
+# DYNAMICS====================================================================
+# Add noise to joint torques and examine distribution of trajectory endpoint
 
 A1 = np.array([55,90]) * np.pi/180   # 55,90 degrees shoudler,elbow
 H1,E1 = joints_to_hand(A1, aparams)
 H2 = H1 + np.array([0, 0.15])        # 15 cm movement distance
-mt = 0.400                           # movement time (sec)
+mt = 0.500                           # movement time (sec)
 sr = 100                             # sample rate (Hz)
 npts = np.int(mt*sr)+1               # number of time points
 
@@ -24,7 +68,6 @@ A0, Ad0 = A[0,:], Ad[0,:] # starting joint angles and velocities
 A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, Q, t, aparams)
 
 # make some plots
-import matplotlib.pyplot as plt
 
 f0 = plt.figure()
 ax = f0.add_subplot(2,2,1)
@@ -45,7 +88,7 @@ lines = ax.plot(t,Q)
 ax.set_xlabel('TIME (sec)')
 ax.set_ylabel('JOINT TORQUES (Nm)')
 f0.tight_layout()
-f0.savefig("fig0.png", dpi=150)
+f0.savefig("dyn1.png", dpi=150)
 
 
 # ============================================================================
@@ -78,20 +121,19 @@ H,_ = joints_to_hand(A, aparams)
 f2 = plt.figure()
 f2ax1 = f2.add_subplot(1,2,1)
 f2ax2 = f2.add_subplot(1,2,2)
-f2ax1.plot(H[0,0],H[0,1],'r.')
-f2ax2.plot(H[-1,0],H[-1,1],'rs')
-f2ax1.set_xlabel('X (m)')
-f2ax2.set_xlabel('X (m)')
-f2ax1.set_ylabel('Y (m)')
-f2ax2.set_ylabel('Y (m)')
+f2ax1.plot(H[0,0]*1000,H[0,1]*1000,'r.')
+f2ax2.plot(H[-1,0]*1000,H[-1,1]*1000,'rs')
+f2ax1.set_xlabel('X (mm)')
+f2ax2.set_xlabel('X (mm)')
+f2ax1.set_ylabel('Y (mm)')
+f2ax2.set_ylabel('Y (mm)')
 f2.tight_layout()
 
+# re-do forward simulations and randomly (gaussian) amplify or diminish
+# joint torques within a given range, and replot. In particular example
+# hand endpoint distribution
 
-# re-do forward simulations and randomly (gaussian) amplify or diminish joint torques
-# within a given range, and replot. In particular example hand endpoint
-# distribution
-
-n_perts = 200
+n_perts = 500
 
 for i in range(n_perts):
 	print("perturbation {0} of {1}".format(i+1,n_perts), end="\r")
@@ -109,11 +151,11 @@ for i in range(n_perts):
 	f1ax4.plot(t,QQ[:,0],'g-')
 	f1ax4.plot(t,QQ[:,1],'r-')
 	H_sim,_ = joints_to_hand(A_sim, aparams)
-	f2ax1.plot(H_sim[:,0],H_sim[:,1],'b-')
-	f2ax2.plot(H_sim[-1,0],H_sim[-1,1],'b.')
-f2ax2.plot(H[-1,0],H[-1,1],'rs')
+	f2ax1.plot(H_sim[:,0]*1000,H_sim[:,1]*1000,'b-')
+	f2ax2.plot(H_sim[-1,0]*1000,H_sim[-1,1]*1000,'b.')
+f2ax2.plot(H[-1,0]*1000,H[-1,1]*1000,'rs')
 f2ax1.axis('equal')
 f2ax2.axis('equal')
-f1.savefig("fig1.png", dpi=150)
-f2.savefig("fig2.png", dpi=150)
+f1.savefig("dyn2.png", dpi=150)
+f2.savefig("dyn3.png", dpi=150)
 
