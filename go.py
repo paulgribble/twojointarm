@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 # KINEMATICS==================================================================
 # Add noise to joint angles and examine distribution of hand positions
+# ============================================================================
 
 A1 = np.array([55,90]) * np.pi/180   # 55,90 degrees shoudler,elbow
 H1,_ = joints_to_hand(A1, aparams)
@@ -46,6 +47,7 @@ f.savefig("kin_1.png", dpi=150)
 
 # DYNAMICS====================================================================
 # Add noise to joint torques and examine distribution of trajectory endpoint
+# ============================================================================
 
 A1 = np.array([55,90]) * np.pi/180   # 55,90 degrees shoudler,elbow
 H1,E1 = joints_to_hand(A1, aparams)
