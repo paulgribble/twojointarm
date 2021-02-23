@@ -1,13 +1,13 @@
 import numpy as np
 
 # PREP========================================================================
-# load up arm parameters aparams and some helper functions
+# load up arm parameters arm_params and some helper functions
 from twojointarm_funs import *
 
 # get ready to plot stuff
 import matplotlib.pyplot as plt
 
-# too see the figures on the screen, if running in an iPython shell,
+# to see the figures on the screen, if running in an iPython shell,
 # execute the command %matplotlib
 
 # KINEMATICS==================================================================
@@ -15,16 +15,16 @@ import matplotlib.pyplot as plt
 # ============================================================================
 
 A1 = np.array([55,90]) * np.pi/180   # 55,90 degrees shoudler,elbow
-H1,_ = joints_to_hand(A1, aparams)
+H1,_ = joints_to_hand(A1, arm_params)
 H2 = H1 + np.array([0, 0.15])        # 15 cm movement distance
-A2 = hand_to_joints(H2, aparams)
+A2 = hand_to_joints(H2, arm_params)
 n_perts = 500
 A = np.zeros((n_perts, 2))
 H = np.zeros((n_perts, 2))
 r = 1.0 * np.pi / 180 # random perts: gaussian with 1 degree sd
 for i in range(n_perts):
 	A[i,:] = A2 + np.random.randn(2) * r
-	H[i,:],_ = joints_to_hand(A[i,:], aparams)
+	H[i,:],_ = joints_to_hand(A[i,:], arm_params)
 
 # make a plot
 f = plt.figure()
@@ -50,7 +50,7 @@ f.savefig("kin_1.png", dpi=150)
 # ============================================================================
 
 A1 = np.array([55,90]) * np.pi/180   # 55,90 degrees shoudler,elbow
-H1,E1 = joints_to_hand(A1, aparams)
+H1,E1 = joints_to_hand(A1, arm_params)
 H2 = H1 + np.array([0, 0.15])        # 15 cm movement distance
 mt = 0.500                           # movement time (sec)
 sr = 100                             # sample rate (Hz)
@@ -60,14 +60,14 @@ npts = np.int(mt*sr)+1               # number of time points
 t,H,Hd,Hdd = minjerk(H1,H2,mt,npts)
 
 # get corresponding desired joint angles velocities and accelerations
-A,Ad,Add = hand_to_joints((H,Hd,Hdd),aparams)
+A,Ad,Add = hand_to_joints((H,Hd,Hdd),arm_params)
 
 # compute required joint torques
-Q = inverse_dynamics(A,Ad,Add,aparams)
+Q = inverse_dynamics(A,Ad,Add,arm_params)
 
 # run a forward simulation using those joint torques Q
 A0, Ad0 = A[0,:], Ad[0,:] # starting joint angles and velocities
-A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, Q, t, aparams)
+A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, Q, t, arm_params)
 
 # make some plots
 
@@ -118,7 +118,7 @@ f1ax4.set_xlabel('TIME (sec)')
 f1ax4.set_ylabel('JOINT TORQUES (Nm)')
 f1.tight_layout()
 
-H,_ = joints_to_hand(A, aparams)
+H,_ = joints_to_hand(A, arm_params)
 
 f2 = plt.figure()
 f2ax1 = f2.add_subplot(1,2,1)
@@ -143,7 +143,7 @@ for i in range(n_perts):
 	QQ[:,0] = QQ[:,0] * (0.05*np.random.randn()+1.0) # mean 1.0, sd 0.05
 	QQ[:,1] = QQ[:,1] * (0.05*np.random.randn()+1.0)
 	A0, Ad0 = A[0,:], Ad[0,:] # starting joint angles and velocities
-	A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, QQ, t, aparams)
+	A_sim, Ad_sim, Add_sim = forward_dynamics(A0, Ad0, QQ, t, arm_params)
 	f1ax1.plot(t,A_sim[:,0]*180/np.pi,'g-')
 	f1ax1.plot(t,A_sim[:,1]*180/np.pi,'r-')
 	f1ax2.plot(t,Ad_sim[:,0]*180/np.pi,'g-')
@@ -152,7 +152,7 @@ for i in range(n_perts):
 	f1ax3.plot(t,Add_sim[:,1]*180/np.pi,'r-')
 	f1ax4.plot(t,QQ[:,0],'g-')
 	f1ax4.plot(t,QQ[:,1],'r-')
-	H_sim,_ = joints_to_hand(A_sim, aparams)
+	H_sim,_ = joints_to_hand(A_sim, arm_params)
 	f2ax1.plot(H_sim[:,0]*1000,H_sim[:,1]*1000,'b-')
 	f2ax2.plot(H_sim[-1,0]*1000,H_sim[-1,1]*1000,'b.')
 f2ax2.plot(H[-1,0]*1000,H[-1,1]*1000,'rs')
